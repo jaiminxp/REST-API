@@ -4,6 +4,7 @@ import validateResource from './middleware/validateResource'
 import { createUserSchema } from './schemas/user.schema'
 import {
   createUserSessionHandler,
+  deleteSessionHandler,
   getUserSessionsHandler,
 } from './controllers/session.controller'
 import { createSessionSchema } from './schemas/session.schema'
@@ -21,6 +22,8 @@ function routes(app: Express) {
   )
 
   app.get('/api/sessions', requireUser, getUserSessionsHandler)
+
+  app.delete('/api/sessions', requireUser, deleteSessionHandler)
 }
 
 export default routes
