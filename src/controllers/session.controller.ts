@@ -1,6 +1,6 @@
 import { Handler } from 'express'
 import { validatePassword } from '../services/user.service'
-import { createSession } from '../services/session.service'
+import { createSession, findSessions } from '../services/session.service'
 import { signJwt } from '../utils/jwt.utils'
 import config from 'config'
 
@@ -31,4 +31,12 @@ export const createUserSessionHandler: Handler = async (req, res) => {
 
   // return tokens
   return res.send({ accessToken, refreshToken })
+}
+
+export const getUserSessionsHandler: Handler = async (req, res) => {
+  const userId = res.locals.user._id
+
+  const sessions = await findSessions({ user: userId, valid: true })
+
+  return res.send(sessions)
 }
