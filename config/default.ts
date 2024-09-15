@@ -3,7 +3,7 @@ export default {
   dbUri: 'mongodb://localhost:27017/rest-api',
   saltWorkFactor: 10,
   accessTokenTtl: '15m',
-  refreshTokenTokenTtl: '1y',
+  refreshTokenTtl: '1y',
   publicKey: ``,
   privateKey: ``,
 }

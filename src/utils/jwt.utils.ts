@@ -13,7 +13,7 @@ export function signJwt(object: Object, options?: jwt.SignOptions) {
 
 export function verifyJwt(token: string) {
   try {
-    const decoded = jwt.verify(token, publicKey)
+    const decoded = jwt.verify(token, publicKey, { algorithms: ['RS256'] })
     return {
       valid: true,
       expired: false,
