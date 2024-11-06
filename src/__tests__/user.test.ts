@@ -1,7 +1,10 @@
 import * as UserService from "../services/user.service";
+import * as SessionService from "../services/session.service";
 import mongoose from "mongoose";
 import supertest from "supertest";
 import createServer from "../utils/server";
+import { get } from "lodash";
+import { createUserSessionHandler } from "../controllers/session.controller";
 
 const app = createServer();
 
@@ -19,6 +22,16 @@ const userPayload = {
     email: 'jane.doe@example.com',
     name: 'Jane Doe'
 }
+
+const sessionPayload = {
+  _id: new mongoose.Types.ObjectId().toString(),
+  user: userId,
+  valid: true,
+  userAgent: "PostmanRuntime/7.28.4",
+  createdAt: new Date("2021-09-30T13:31:07.674Z"),
+  updatedAt: new Date("2021-09-30T13:31:07.674Z"),
+  __v: 0,
+};
 
 describe("user", () => {
   describe("user registration", () => {
@@ -78,7 +91,38 @@ describe("user", () => {
     
     describe("create user session", () => {
         describe('given the username and password are valid', () => {
-            it('should return a signed accessToken & refreshToken', async () => {});
+          it("should return a signed accessToken & refreshToken", async () => {
+            jest
+              .spyOn(UserService, "validatePassword")
+              // @ts-ignore
+              .mockReturnValue(userPayload);
+            jest
+              .spyOn(SessionService, "createSession")
+              // @ts-ignore
+              .mockReturnValue(sessionPayload);
+            
+            const req = {
+              get: () => "a user agent",
+              body: {
+                email: "test@example.com",
+                password: "Password123",
+              }
+            }
+
+            const send = jest.fn();
+
+            const res = {
+              send
+            }
+
+            // @ts-ignore
+            await createUserSessionHandler(req, res);
+
+            expect(send).toHaveBeenCalledWith({
+              accessToken: expect.any(String),
+              refreshToken: expect.any(String),
+            })
+          });
         })
     })
 });
